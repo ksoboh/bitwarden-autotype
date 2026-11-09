@@ -6,8 +6,9 @@ Installed 2026-11-08 on the gaming PC from https://github.com/anonymous1184/bitw
 issue #71 "Someone please fork this thing" (2025). It runs from SOURCE with a portable AutoHotkey,
 not from the prebuilt exe or installer, so what was audited is exactly what runs.
 (This file replaces upstream's 4-line README.txt, which only said to put bw.exe next to the exe.)
-Other PCs get the identical install from Google Drive: "My Drive\Handoff\bitwarden-autotype\install.ps1" (same
-commit, same 5 patches, same two official downloads with hash checks). Record: vault note "Bitwarden Auto-Type".
+This is Khalid's fork: https://github.com/ksoboh/bitwarden-autotype (public; upstream kept as the git remote
+"upstream"). Other PCs get the identical install with its install.ps1: it clones the fork, downloads the two official
+binaries with hash checks and puts a shortcut on the Desktop. Record: vault note "Bitwarden Auto-Type".
 
 WHAT IS IN THIS FOLDER
   bw-at.ahk, Lib\          the tool's source (AutoHotkey v1 script, about 5,200 lines), audited, 7 local patches (below)
