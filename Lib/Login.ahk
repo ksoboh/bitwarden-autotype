@@ -157,6 +157,9 @@ Login_Toggle(ShowTip := true)
 	{
 		SESSION := ""
 		IsLogged := false
+		; Local patch 5: Logout drops the decrypted vault and the master password from memory
+		BwFields := []
+		MasterPw := ""
 		Tip("Logged out")
 		Async("Bitwarden", "logout")
 		; Update Menu
@@ -197,6 +200,9 @@ Login_Toggle(ShowTip := true)
 		SESSION := out
 		IsLogged := true
 		IsLocked := false
+		; Local patch 5: load the vault items here (startup no longer does it)
+		MasterPw := passwd
+		Bitwarden_Data()
 
 		; Update Menu
 		Menu Tray, Enable, 1&

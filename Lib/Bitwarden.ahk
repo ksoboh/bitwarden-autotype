@@ -25,11 +25,19 @@ Bitwarden(Parameters, Passwd := "")
 Bitwarden_Data()
 {
 	Menu Tray, Icon, shell32.dll, 239
-	BwFields := Bitwarden("list items")
-	BwFields := StrReplace(BwFields, ":null", ":""""")
-	BwFields := JSON.Load(BwFields)
-	BwFields := Bitwarden_Parse(BwFields)
-	Menu Tray, Icon, % A_IsCompiled ? A_ScriptFullPath : A_ScriptDir "\assets\bw-at.ico"
+	out := Bitwarden("list items")
+	icon := A_IsCompiled ? A_ScriptFullPath : A_ScriptDir "\assets\bw-at.ico"
+	; Local patch 4: on failure the CLI answers in plain text (e.g. "Vault is locked."), not JSON
+	if (ErrorLevel || !RegExMatch(out, "^\s*[\[\{]"))
+	{
+		Menu Tray, Icon, % icon
+		Alert(0x10, Trim(out))
+		return false
+	}
+	out := StrReplace(out, ":null", ":""""")
+	BwFields := Bitwarden_Parse(JSON.Load(out))
+	Menu Tray, Icon, % icon
+	return true
 }
 
 Bitwarden_Parse(Items)
@@ -63,6 +71,13 @@ Bitwarden_Parse(Items)
 			item.domain := domain
 			; match 4 is a RegEx, don't modify it
 			item.uri := uri.match = 4 ? uri.uri : host resource
+			out.Push(item)
+		}
+		; Local patch 6: a login without URIs still shows in the search picker
+		if (!IsObject(entry.login.uris) || !entry.login.uris.Count())
+		{
+			item := base.Clone()
+			item.match := "", item.host := "", item.schema := "", item.domain := "", item.uri := ""
 			out.Push(item)
 		}
 	}

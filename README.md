@@ -6,6 +6,26 @@ It does NOT replace Bitwarden application as entries can't be added/edited. They
 
 <sup>*\* Even for the free version, but please support Bitwarden development by [buying a subscription][05] (I'm not affiliated in any way).*</sup>
 
+## This fork (ksoboh, November 2026)
+
+Upstream stopped in 2022. This fork keeps the tool working with today's Bitwarden CLI and runs it from source with a portable AutoHotkey 1.1, so the code you read is the code that runs. The source was audited before use: no telemetry, no hidden network calls, and the machine-code JSON parser in `Lib\JSON.ahk` is byte-identical to the published [cJson.ahk 0.4.0](https://github.com/G33kDude/cJson.ahk).
+
+What is different (7 local patches, details and the audit in `README.txt`):
+
+- Logs in with Bitwarden CLI 2024.09 and newer (the `global_account_activeAccountId` state key); no more "You are already logged in".
+- Lock and Logout really drop the decrypted vault and the master password from memory; unlock loads them again.
+- A search picker of every login opens when nothing matches the active window, so per-program URIs are optional.
+- After the picker, the tool waits for the target window before typing.
+- Plain-text CLI errors are shown instead of a JSON crash; update check off; auto-sync every 5 minutes; Autorun starts through the portable AutoHotkey.
+
+Install on Windows (PowerShell, needs git): download `install.ps1` from this repo, then
+
+    powershell -NoProfile -ExecutionPolicy Bypass -File install.ps1
+
+It clones this repo, downloads AutoHotkey 1.1.37.02 and Bitwarden CLI 2026.10.1 from their official GitHub releases with SHA-256 checks (and checks bw.exe's Bitwarden signature), and puts a shortcut on the Desktop. Then start it, tick "Use Personal API Key" and log in. `bw.exe`, `data.json` (your encrypted vault) and `bw-at.ini` (holds the API client id and secret after login) never belong in git; the repo carries only the blank settings template.
+
+Kept off on purpose: PIN/authenticator unlock, favicons, TCATO and the built-in password generator (reasons in `README.txt`). Test for the picker: `ahk\AutoHotkeyU64.exe tests\pickertest.ahk`.
+
 ## Security
 
 Some people feel uneasy to trust their passwords to 3rd parties, and of course that's the way it should be. Why trust this small application? Because its 100% transparent. Bitwarden itself is the same, relies on being completely transparent and Open Source.

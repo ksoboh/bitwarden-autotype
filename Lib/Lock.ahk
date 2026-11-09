@@ -12,6 +12,9 @@ Lock_Toggle(ShowTip := false)
 		if (!passwd)
 			return
 		IsLocked := false
+		; Local patch 5: Lock dropped the vault items and master password, load them again
+		MasterPw := passwd
+		Bitwarden_Data()
 
 		; Update Menu
 		Menu Tray, Enable, 1&
@@ -26,6 +29,9 @@ Lock_Toggle(ShowTip := false)
 	{
 		SESSION := ""
 		IsLocked := true
+		; Local patch 5: Lock really drops the decrypted vault and the master password from memory
+		BwFields := []
+		MasterPw := ""
 		if (ShowTip)
 			Tip("Vault locked")
 		; Update menu

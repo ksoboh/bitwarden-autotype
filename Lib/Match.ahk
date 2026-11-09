@@ -50,7 +50,7 @@ Match(Mode)
 		else if RegExMatch(entry.uri, "title=(.+)", $)
 			isMatch := ($1 == activeTitle)
 		; by window title, partial match
-		else if (!entry.schema)
+		else if (!entry.schema && StrLen(entry.uri)) ; patch 6: URI-less logins never match by title
 			isMatch := InStr(activeTitle, entry.uri)
 
 		if (!isMatch)
@@ -70,14 +70,30 @@ Match(Mode)
 	matchId := matches.Count()
 	if (!matchId)
 	{
-		;TODO: Create a UI for entry selection
-		; Fixes:
-		; Add TOTP Copy button | https://community.bitwarden.com/t/7041
-		Alert(0x10, "No auto-type match found.")
+		; Local patch 6: nothing matched this window, offer every login (one row each) in a search picker
+		seen := {}
+		for _,entry in BwFields
+		{
+			if (Mode = "totp" && !entry.otpauth)
+				continue
+			key := entry.name "|" entry.username
+			if seen.HasKey(key)
+				continue
+			seen[key] := true
+			if (entry.HasKey("field") && Mode = "default")
+				entry.sequence := entry.field
+			else
+				entry.sequence := INI.SEQUENCES[Mode]
+			matches.Push(entry)
+		}
+		matchId := matches.Count() ? Match_Search(matches, Mode) : 0
 	}
 	else if (matchId > 1)
 		matchId := Match_Select(matches, Mode)
 	WinActivate % "ahk_id" hWnd
+	; Local patch 7: a picker may have had the focus; let the target window take it back before typing
+	WinWaitActive % "ahk_id" hWnd,, 1
+	Sleep 150
 	if (matchId)
 		AutoType(matches[matchId], Mode)
 }

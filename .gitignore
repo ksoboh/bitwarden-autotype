@@ -8,3 +8,14 @@ release
 
 # Files
 assets/BinMod.exe
+
+# ---- Fork: runtime files that must never be committed ----
+bw.exe
+data.json
+data.json.*
+icons/
+debug.txt
+ahk/
+*.bak
+tests/result.txt
+tests/trace.txt
