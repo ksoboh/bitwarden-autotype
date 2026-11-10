@@ -33,8 +33,13 @@ START AND LOG IN (Khalid does this himself; Claude never types vault credentials
   3. Later starts ask only for the master password (the login is kept in data.json).
 
 USE
-  Click into a login's username field and press Ctrl+Alt+A: it types username, Tab, password, Enter.
-  Ctrl+Alt+U = username only, Ctrl+Alt+P = password + Enter, Ctrl+Alt+O = TOTP code.
+  Click into a login's username field and press Ctrl+Alt+A: it types username, Tab, password. You press Enter.
+  Ctrl+Alt+U = username only, Ctrl+Alt+P = password only, Ctrl+Alt+O = TOTP code.
+  No automatic Enter since 2026-11-10 (upstream's default ended both with {Enter}): on 2026-11-09 Ctrl+Alt+A with
+  the Claude desktop app in front typed a login into the chat box and the Enter sent it. NEVER use the hotkeys
+  while a chat app (Claude, Teams, WhatsApp...) is the active window: after the picker closes, the app puts the
+  cursor in its message box, not in the field you clicked. In Claude's browser pane: copy from Bitwarden, Ctrl+V.
+  A single item can still end with Enter through its own "auto-type" field, e.g. {Username}{Tab}{Password}{Enter}.
   If no item matches the window, a picker opens (patch 6): type part of the login's name or user, Enter (or
   double-click). So URIs are optional; add one only for programs you use every day, to skip the picker.
   Which entry is typed without the picker comes from the URIs of the Bitwarden login item:
@@ -87,7 +92,8 @@ LOCAL PATCHES (git shows the files as modified; re-apply after any git pull)
                           "You are already logged in", upstream issues #65 and #67)
   2. Lib\Autorun.ahk 17   the Run-key value is "<ahk\AutoHotkeyU64.exe>" "<bw-at.ahk>" instead of the bare .ahk
                           path (the .ahk file association points at AutoHotkey v2, which cannot run this v1 script)
-  3. bw-at.ini            updates = 0
+  3. bw-at.ini            updates = 0; sync = 5 (auto-sync every 5 min, 2026-11-09); no {Enter} at the end of the
+                          default and password sequences (2026-11-10)
   4. Lib\Bitwarden.ahk    Bitwarden_Data(): when the CLI answers plain text (e.g. "Vault is locked.") show it
                           instead of crashing on the JSON parse (idea from fork t-hermanns, 2026-09)
   5. Lib\Lock.ahk, Lib\Login.ahk, bw-at.ahk   Lock and Logout clear the cached vault items (BwFields) and the
