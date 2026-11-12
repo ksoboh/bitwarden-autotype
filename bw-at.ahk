@@ -33,6 +33,7 @@ global SESSION := ""
 	, UserSeed := ""
 	, ClipData := ""
 	, AppTitle := "Bitwarden Auto-Type"
+	, AppVersion := "1.0b"
 
 ; For VSCode only
 EnvGet DEBUG, AHK_DEBUG
@@ -106,6 +107,10 @@ Timeout(INI.GENERAL.timeout, INI.GENERAL.action)
 
 ; Scheduled sync
 Bitwarden_SyncAuto(INI.GENERAL.sync)
+
+; First run: let the CLI create its state file now, so its "creating it" notice never mixes into the login answer
+if !FileExist("data.json")
+	Bitwarden("status")
 
 ; Active vault information
 IsLocked := IsLogged := false
@@ -182,20 +187,13 @@ return ; End of auto-execute thread
 #Include <JSON>
 #Include <Match>
 
-;@Ahk2Exe-Base %A_ScriptDir%\assets\bw-at.bin, bw-at.exe, CP65001
-;@Ahk2Exe-SetCompanyName u/anonymous1184
+;@Ahk2Exe-SetCompanyName ksoboh (fork of u/anonymous1184)
 ;@Ahk2Exe-SetCopyright Copyleft 2020
 ;@Ahk2Exe-SetDescription Bitwarden Auto-Type
 ;@Ahk2Exe-SetLanguage 0x0409
 ;@Ahk2Exe-SetMainIcon %A_ScriptDir%\assets\bw-at.ico
 ;@Ahk2Exe-SetName Bitwarden Auto-Type
 ;@Ahk2Exe-SetOrigFilename bw-at.ahk
-;@Ahk2Exe-SetProductVersion 1.1.4.3
-;@Ahk2Exe-SetVersion 1.1.4.3
-;@Ahk2Exe-UpdateManifest 0, Auto-Type, 1.1.4.3, 0
-; BinMod
-;@Ahk2Exe-PostExec "%A_ScriptDir%\assets\BinMod.exe" "%A_WorkFileName%"
-;@Ahk2Exe-Cont  "2.AutoHotkeyGUI.Auto-Type-GUI"
-;@Ahk2Exe-PostExec "%A_ScriptDir%\assets\BinMod.exe" "%A_WorkFileName%"
-;@Ahk2Exe-Cont  "22.>AUTOHOTKEY SCRIPT<.$APPLICATION SOURCE"
-;@Ahk2Exe-PostExec "%A_ScriptDir%\assets\BinMod.exe" "%A_WorkFileName%" /SetUTC
+;@Ahk2Exe-SetVersion 1.0.0.0
+;@Ahk2Exe-SetProductVersion 1.0b
+;@Ahk2Exe-UpdateManifest 0, Auto-Type, 1.0.0.0, 0

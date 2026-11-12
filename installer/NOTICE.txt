@@ -1,0 +1,29 @@
+Bitwarden Auto-Type 1.0b
+========================
+
+An unofficial helper that types logins from your Bitwarden vault into Windows programs. It is not made by,
+endorsed by or affiliated with Bitwarden Inc. "Bitwarden" is a trademark of Bitwarden Inc.
+
+This package contains:
+
+1. Bitwarden Auto-Type (bw-at.exe)
+   Fork: https://github.com/ksoboh/bitwarden-autotype
+   Original: https://github.com/anonymous1184/bitwarden-autotype by u/anonymous1184
+   Licence: WTFPL (see LICENSE). Provided "as is", without warranty of any kind.
+   Compiled from the fork's source with the official AutoHotkey 1.1.37.02 compiler
+   (https://www.autohotkey.com, GNU GPL v2). The source is embedded in the exe and public in the fork.
+   Includes cJson.ahk by G33kDude (MIT) and the MCL loader by G33kDude and CloakerSmoker (CC-BY-4.0).
+
+2. Bitwarden CLI 2026.10.1 (bw.exe), unmodified, from the official release
+   https://github.com/bitwarden/clients/releases/tag/cli-v2026.10.1
+   Copyright Bitwarden Inc. Licence: GNU GPL v3. Source: https://github.com/bitwarden/clients
+
+What to know before you install:
+
+- While it is unlocked, the tool holds your decrypted logins in its memory. Lock it (tray menu) when you
+  leave the PC.
+- After login, the settings file bw-at.ini in the install folder holds your Bitwarden API client id and
+  secret in plain text, and data.json holds your encrypted vault. Uninstalling removes both.
+- Do not use the hotkeys while a chat or messaging app is the active window: the typed text can land in the
+  message box.
+- The installer is not code-signed, so Windows may warn about an unknown publisher.

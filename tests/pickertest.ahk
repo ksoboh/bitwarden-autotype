@@ -68,4 +68,5 @@ Watchdog:
 return
 
 ; The library ends with GUI labels, so it must come after the auto-execute section (as in bw-at.ahk).
-#Include %A_ScriptDir%\..\Lib\Match_Search.ahk
+#Include %A_ScriptDir%/../Lib/Theme.ahk
+#Include %A_ScriptDir%/../Lib/Match_Search.ahk

@@ -144,10 +144,20 @@ Match_Select(Matches, Mode)
 {
 	static MatchId
 
-	Gui Match:New, +AlwaysOnTop +LastFound +ToolWindow
-	Gui Match:Font, s11
-	Gui Match:Add, ListView, AltSubmit Grid gMatch_Row
+	; v1.0b look (Lib\Theme.ahk)
+	Gui Match:New, +AlwaysOnTop +LastFound -MinimizeBox +HwndhGui
+	Gui Match:Color, % Theme("bg"), % Theme("panel")
+	Gui Match:Margin, 24, 20
+	Theme_Font("Match", "title")
+	Gui Match:Add, Text,, Choose a login
+	Theme_Font("Match", "label")
+	Gui Match:Add, Text, y+4, Several logins match this window. Double-click one, or select it and press Enter.
+	Theme_Font("Match", "field")
+	Gui Match:Add, ListView, % "y+16 r" Min(Matches.Count() + 1, 12) " AltSubmit -Multi -Hdr -E0x200 +LV0x10020 gMatch_Row +HwndhLV"
+		. " Background" Theme("panel") " c" Theme("text")
 		, % "|#|Entry|User" (Mode = "totp" ? "" : "|TOTP")
+	Theme_ListView(hLV, 0)
+	Theme_Window(hGui)
 	Gui Match:Add, Button, Default gMatch_Use x-50 y-50
 
 	total := Matches.Count()
@@ -157,7 +167,7 @@ Match_Select(Matches, Mode)
 	{
 		; Row
 		LV_Add("Icon" i,, i, match.name, match.username
-			, Mode = "totp" ? "" : (match.otpauth ? "✔" : "✘"))
+			, Mode = "totp" ? "" : (match.otpauth ? "2FA code" : ""))
 		; Icon
 		if (SubStr(match.host, -3) = ".exe")
 		{

@@ -7,26 +7,46 @@ Login()
 		. "Email Verification Codes" (tsl = 1 ? "||" : "|")
 		. "Authenticator Application" (tsl = 2 ? "||" : "|")
 		. "YubiKey OTP Security Key" (tsl = 3 ? "||" : "|")
-	Gui Login:New, +LastFound -SysMenu
-	Gui Login:Font, s11 q5, Consolas
+	; v1.0b look (Lib\Theme.ahk). The creation order of the checkbox, the three labels, the edits and the
+	; drop-down must stay as it is: the functions below address them as Button1, Static1-3, Edit1-4, ComboBox1.
+	Gui Login:New, +LastFound -MinimizeBox +HwndhGui
+	Gui Login:Color, % Theme("bg"), % Theme("panel")
+	Theme_Font("Login", "label")
 	c := INI.CREDENTIALS["api-key"] ? "Checked " : ""
-	Gui Login:Add, Checkbox, % c "gLogin_Api_Toggle", &Use Personal API Key
-	Gui Login:Add, Link, gLogin_Link -TabStop xp+185, <a>?</a>
-	Gui Login:Add, Text, w225 xm, &Email Address:
-	Gui Login:Add, Edit, gLogin_Check w225, % INI.CREDENTIALS.user
-	Gui Login:Add, Text, w225, Master &Password:
-	Gui Login:Add, Edit, gLogin_Check Password w225
-	Gui Login:Add, Text, w225, &Two-step Login:
-	Gui Login:Add, DropDownList, gLogin_Check AltSubmit w225, % tsl
-	GuiControlGet last, Pos, ComboBox1
-	Gui Login:Add, Edit, % "gLogin_Check Password w225 x" lastX " y" lastY
-	Gui Login:Add, Button, w110 gExitApp, E&xit
-	Gui Login:Add, Button, w110 xp+115 Default gLogin_Ok, &OK
+	Gui Login:Add, Checkbox, % c "x24 y89 w16 h16 gLogin_Api_Toggle"
+	Gui Login:Add, Link, gLogin_Link -TabStop x334 y87, <a>?</a>
+	Gui Login:Add, Text, x24 y122 w320, &Email Address:
+	Theme_Pad("Login", "x24 y142 w320 h38")
+	Theme_Font("Login", "field")
+	Gui Login:Add, Edit, x36 y150 w296 h22 -E0x200 gLogin_Check, % INI.CREDENTIALS.user
+	Theme_Font("Login", "label")
+	Gui Login:Add, Text, x24 y192 w320, Master &Password:
+	Theme_Pad("Login", "x24 y212 w320 h38")
+	Theme_Font("Login", "field")
+	Gui Login:Add, Edit, x36 y220 w296 h22 -E0x200 gLogin_Check Password
+	Theme_Font("Login", "label")
+	Gui Login:Add, Text, x24 y262 w320, &Two-step Login:
+	Theme_Pad("Login", "x24 y282 w320 h38")
+	Theme_Font("Login", "field")
+	Gui Login:Add, DropDownList, x24 y286 w320 gLogin_Check AltSubmit +HwndhDDL, % tsl
+	Theme_Native(hDDL, "CFD")
+	Gui Login:Add, Edit, x36 y290 w296 h22 -E0x200 gLogin_Check Password
+	Gui Login:Font, s10 w400, Segoe UI
+	Gui Login:Add, Button, x24 y346 w154 h36 gExitApp +HwndhExit, E&xit
+	Gui Login:Add, Button, x190 y346 w154 h36 Default gLogin_Ok +HwndhOk, &Log in
+	Theme_Native(hExit), Theme_Native(hOk)
 	GuiControl Focus, % "Edit" !!INI.CREDENTIALS.user + 1
 
 	Login_Api_Toggle()
 	Gui Login:Add, Edit, Hidden vPasswd x0 y0
-	Gui Login:Show,, Bitwarden Auto-Type
+	Theme_Font("Login", "title")
+	Gui Login:Add, Text, x24 y20 w320, Log in to Bitwarden
+	Theme_Font("Login", "label")
+	Gui Login:Add, Text, x24 y54 w320, Later starts only ask for the master password.
+	Gui Login:Add, Text, x48 y88 w270 gLogin_ApiLabel, Use Personal API Key (recommended)
+	Login_Check()
+	Theme_Window(hGui)
+	Gui Login:Show, w368 h406, Bitwarden Auto-Type
 
 	WinWaitClose
 	return Passwd
@@ -84,7 +104,16 @@ Login_Check()
 	{
 		valid := true
 	}
-	GuiControl % valid ? "Enable" : "Disable", &OK
+	GuiControl % valid ? "Enable" : "Disable", &Log in
+}
+
+; v1.0b: the checkbox has no text of its own (so the label can be coloured); a click on the label toggles it
+Login_ApiLabel()
+{
+	GuiControlGet apiEnabled,, Button1
+	GuiControl ,, Button1, % !apiEnabled
+	Login_Api_Toggle()
+	Login_Check()
 }
 
 Login_Credentials(Passwd)

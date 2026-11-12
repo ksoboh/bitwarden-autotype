@@ -106,11 +106,7 @@ Bitwarden_Status()
 	BwStatus := JSON.Load(out)
 	lastSync := RegExReplace(BwStatus.lastSync, "\D|.{4}$")
 	epoch := Epoch(lastSync) + Epoch(A_Now) - Epoch()
-	if (A_IsCompiled)
-		FileGetVersion version, % A_ScriptFullPath
-	else
-		FileRead version, % A_ScriptDir "\version"
-	Menu Tray, Tip, % AppTitle " v" version "`n"
+	Menu Tray, Tip, % AppTitle " v" AppVersion "`n"
 		. Epoch_Date(epoch, "'Last Sync:' MM/dd/yy h:mm tt")
 }
 

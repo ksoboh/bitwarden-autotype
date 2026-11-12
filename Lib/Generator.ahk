@@ -1,25 +1,43 @@
 ﻿
 Generator()
 {
-	Gui Generator:New, +AlwaysOnTop +LabelGenerator +LastFound +ToolWindow
-	Gui Generator:Font, s11 q5, Consolas
-	Gui Generator:Add, CheckBox, % (INI.GENERATOR.lower ? "Checked" : "") " x10 y10" , Lower
-	Gui Generator:Add, CheckBox, % (INI.GENERATOR.upper ? "Checked" : "") " xp+70 yp", Upper
-	Gui Generator:Add, CheckBox, % (INI.GENERATOR.digits ? "Checked" : "") " xp+65 yp", Digits
-	Gui Generator:Add, CheckBox, % (INI.GENERATOR.symbols ? "Checked" : "") " xp+75 yp", Symbols
-	Gui Generator:Add, Text, x10 yp+30, Length:
-	Gui Generator:Add, Edit, w50 xp+75 yp-5
+	; v1.0b look (Lib\Theme.ahk). Creation order and the texts of the checkboxes and buttons are unchanged:
+	; Generator_Monitor addresses them as Button1-4, Edit1-3, Static4 and by the texts Copy / Generate.
+	Gui Generator:New, +AlwaysOnTop +LabelGenerator +LastFound -MinimizeBox +HwndhGui
+	Gui Generator:Color, % Theme("bg"), % Theme("panel")
+	Gui Generator:Font, % "s10 w400 c" Theme("text"), Segoe UI
+	for i,key in ["Lower", "Upper", "Digits", "Symbols"]
+	{
+		Gui Generator:Add, CheckBox, % (INI.GENERATOR[key] ? "Checked" : "") " x" 24 + (i - 1) * 82 " y66 w78 h20 +HwndhChk", % key
+		DllCall("uxtheme\SetWindowTheme", "Ptr",hChk, "WStr","", "WStr","") ; unthemed, so the text takes our colour
+	}
+	Theme_Font("Generator", "label")
+	Gui Generator:Add, Text, x24 y104 w100, Length
+	Theme_Pad("Generator", "x24 y124 w100 h38")
+	Theme_Font("Generator", "field")
+	Gui Generator:Add, Edit, x36 y132 w76 h22 -E0x200 Number
 	Gui Generator:Add, UpDown, Range1-999, % INI.GENERATOR.length
-	Gui Generator:Add, Text, xp+70 yp+6, Exclude:
-	Gui Generator:Add, Edit, gGenerator_filter r1 w70 xp+70 yp-5, % INI.GENERATOR.exclude
-	Gui Generator:Add, Text, x10 yp+35, Password:
-	Gui Generator:Add, Edit, w210 xp+75 yp-5
-	Gui Generator:Add, Text, x10 yp+35, Entropy: 0 bits    ; +3
-	Gui Generator:Add, Button, x160 yp-6, Copy
-	Gui Generator:Add, Button, Default xp+57 yp, Generate
-	Gui Generator:Show,, Secure Password Generator
+	Theme_Font("Generator", "label")
+	Gui Generator:Add, Text, x140 y104 w204, Exclude these characters
+	Theme_Pad("Generator", "x140 y124 w204 h38")
+	Theme_Font("Generator", "field")
+	Gui Generator:Add, Edit, x152 y132 w180 h22 -E0x200 gGenerator_filter, % INI.GENERATOR.exclude
+	Theme_Font("Generator", "label")
+	Gui Generator:Add, Text, x24 y174 w320, Password
+	Theme_Pad("Generator", "x24 y194 w320 h38")
+	Gui Generator:Font, % "s11 w400 c" Theme("text"), Consolas
+	Gui Generator:Add, Edit, x36 y202 w296 h22 -E0x200
+	Theme_Font("Generator", "label")
+	Gui Generator:Add, Text, x24 y248 w150 h36 0x200, Entropy: 0 bits
+	Gui Generator:Font, s10 w400, Segoe UI
+	Gui Generator:Add, Button, x176 y248 w80 h36 +HwndhCopy, Copy
+	Gui Generator:Add, Button, x264 y248 w80 h36 Default +HwndhGen, Generate
+	Theme_Native(hCopy), Theme_Native(hGen)
+	Theme_Font("Generator", "title")
+	Gui Generator:Add, Text, x24 y20 w320, Password generator
+	Theme_Window(hGui)
+	Gui Generator:Show, w368 h308, % AppTitle
 	GuiControls()
-	Random ,, % Epoch()
 	INI.GENERATOR.AtomicSet(0)
 	OnMessage(0x0101, "Generator_Monitor") ; WM_KEYUP
 	OnMessage(0x0202, "Generator_Monitor") ; WM_LBUTTONUP
@@ -117,12 +135,26 @@ Generator_Password(Options, ByRef Entropy)
 	from := StrSplit(from)
 	loop % Options.length
 	{
-		Random rnd, 1, % dict
+		rnd := Generator_Rand(dict)
 		out .= from[rnd]
 	}
 	return out, Entropy := Entropy(dict, Options.length)
 }
 
+
+; v1.0b: random numbers from Windows' cryptographic generator (was AHK's Random seeded with the clock).
+; Returns 1..Max without modulo bias.
+Generator_Rand(Max)
+{
+	limit := 0x100000000 - Mod(0x100000000, Max)
+	loop
+	{
+		n := 0
+		if !DllCall("advapi32\SystemFunction036", "UInt*",n, "UInt",4) ; RtlGenRandom
+			throw Exception("No secure random numbers available")
+	} until (n < limit)
+	return Mod(n, Max) + 1
+}
 
 GeneratorClose:
 GeneratorEscape:
