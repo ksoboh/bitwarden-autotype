@@ -18,7 +18,11 @@ What is different (7 local patches, details and the audit in `README.txt`):
 - After the picker, the tool waits for the target window before typing.
 - Plain-text CLI errors are shown instead of a JSON crash; update check off; auto-sync every 5 minutes; Autorun starts through the portable AutoHotkey.
 
-Install on Windows (PowerShell, needs git): download `install.ps1` from this repo, then
+**Version 1.0b:** the windows have a dark Bitwarden-style look, the password generator uses cryptographic random numbers, and there is a one-file installer.
+
+**Easiest install:** download `Bitwarden-AutoType-Setup-1.0b.exe` from the [Releases page](https://github.com/ksoboh/bitwarden-autotype/releases) and run it. Per-user, no admin rights, Start menu and desktop icon, normal uninstall (which also removes your settings and the local vault copy). It is not code-signed, so Windows shows an "unknown publisher" warning: More info, Run anyway. It is built from this source by `installer\build.ps1`.
+
+Or run it from source (PowerShell, needs git): download `install.ps1` from this repo, then
 
     powershell -NoProfile -ExecutionPolicy Bypass -File install.ps1
 

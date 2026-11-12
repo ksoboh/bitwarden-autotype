@@ -6,6 +6,16 @@ Installed 2026-11-08 on the gaming PC from https://github.com/anonymous1184/bitw
 issue #71 "Someone please fork this thing" (2025). It runs from SOURCE with a portable AutoHotkey,
 not from the prebuilt exe or installer, so what was audited is exactly what runs.
 (This file replaces upstream's 4-line README.txt, which only said to put bw.exe next to the exe.)
+VERSION 1.0b (2026-11-12): the tool's windows (login, unlock, search picker, chooser, generator) have a dark
+Bitwarden-style look (Lib\Theme.ahk; colours matched by eye, not an official palette), the generator uses secure
+random numbers, and there is a one-file installer: Bitwarden-AutoType-Setup-1.0b.exe on the fork's Releases page
+(per-user, no admin, Start menu + desktop icon, uninstall removes the settings and vault copy). It is built by
+installer\build.ps1 from a CLEAN copy of the source: the compiler embeds bw-at.ini, so never build from a folder
+whose ini holds the API key (the script refuses). The installer is unsigned, so Windows warns on first run.
+Still plain Windows look: message boxes, the settings window, the 2FA code box. No Linux version (AutoHotkey is
+Windows-only).
+Windows check without a vault: ahk\AutoHotkeyU64.exe uitest.ahk login|unlock|generator|select|search
+
 This is Khalid's fork: https://github.com/ksoboh/bitwarden-autotype (public; upstream kept as the git remote
 "upstream"). Other PCs get the identical install with its install.ps1: it clones the fork, downloads the two official
 binaries with hash checks and puts a shortcut on the Desktop. Record: vault note "Bitwarden Auto-Type".
@@ -63,7 +73,8 @@ SETTINGS THAT STAY OFF (decided 2026-11-08 after the audit)
                                                    check) and so reveal the vault's site list to those sites.
   Update check                      updates = 0    (patch 3) upstream is dead; saves a daily call to GitHub.
   Auto-Type Obfuscation (TCATO)     tcato = 0      puts half of every password through the clipboard.
-  Password generator (tray menu)    do not use     seeded with the clock. Use Bitwarden's own generator.
+  Password generator (tray menu)    fine since 1.0b: it now draws from Windows' cryptographic random numbers.
+                                                   (Upstream's was seeded with the clock.)
   Autorun (tray > Settings)         off            one click to turn on; patch 2 makes it start via ahk\ correctly.
 
 SECURITY AUDIT 2026-11-08
